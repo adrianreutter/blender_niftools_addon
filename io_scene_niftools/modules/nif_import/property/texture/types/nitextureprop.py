@@ -79,16 +79,28 @@ class NiTextureProp:
                         NifLog.warn('linking base slot')
                         nodes_wrapper.create_and_link(
                             TEX_SLOTS.BASE, texture_data)
-                # check for map
-                for texture in shader_textures:
-                    texture_data = getattr(texture, 'texture_data')
-                    is_used = getattr(texture, 'is_used')
+                if len(shader_textures) > 1:
+                    texture_data = getattr(shader_textures[1], 'texture_data')
+                    is_used = getattr(shader_textures[1], 'is_used')
                     if texture_data and is_used:
                         source = getattr(texture_data, 'source', None)
                         if source:
                             file_name = getattr(source, 'file_name', None)
                             if file_name:
-                                if 'CompleteMap' in str(file_name):
+                                if 'CompleteMap' not in str(file_name):
+                                    NifLog.warn(' 1 linking DETAIL slot')
                                     NifLog.warn(str(file_name))
+                                    nodes_wrapper.create_and_link(
+                                        TEX_SLOTS.DETAIL, texture_data)
+                if len(shader_textures) > 2:
+                    texture_data = getattr(shader_textures[2], 'texture_data')
+                    is_used = getattr(shader_textures[2], 'is_used')
+                    if texture_data and is_used:
+                        source = getattr(texture_data, 'source', None)
+                        if source:
+                            file_name = getattr(source, 'file_name', None)
+                            if file_name:
+                                if 'CompleteMap' not in str(file_name):
+                                    NifLog.warn(' 2 linking DETAIL slot')
                                     nodes_wrapper.create_and_link(
                                         TEX_SLOTS.DETAIL, texture_data)
