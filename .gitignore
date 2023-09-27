@@ -189,3 +189,6 @@ fabric.properties
 
 # Exclude temp build directory
 install/tmp
+
+# Exclude build .zip files
+install/*.zip
