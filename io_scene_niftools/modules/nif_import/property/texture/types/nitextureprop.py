@@ -67,40 +67,44 @@ class NiTextureProp:
                 nodes_wrapper.create_and_link(slot_name, n_tex)
                 all_empty = False
         if all_empty:
-            NifLog.warn(
-                f"Tried importing a texture, but slots are empty, so trying to reach shader_textures")
-            # NifLog.warn(n_texture_desc)
-            shader_textures = getattr(n_texture_desc, 'shader_textures', None)
-            if shader_textures:
-                if len(shader_textures) > 0:
-                    texture_data = getattr(shader_textures[0], 'texture_data')
-                    is_used = getattr(shader_textures[0], 'is_used')
-                    if texture_data and is_used:
-                        NifLog.warn('linking base slot')
-                        nodes_wrapper.create_and_link(
-                            TEX_SLOTS.BASE, texture_data)
-                if len(shader_textures) > 1:
-                    texture_data = getattr(shader_textures[1], 'texture_data')
-                    is_used = getattr(shader_textures[1], 'is_used')
-                    if texture_data and is_used:
-                        source = getattr(texture_data, 'source', None)
-                        if source:
-                            file_name = getattr(source, 'file_name', None)
-                            if file_name:
-                                if 'CompleteMap' not in str(file_name):
-                                    NifLog.warn(' 1 linking DETAIL slot')
-                                    NifLog.warn(str(file_name))
-                                    nodes_wrapper.create_and_link(
-                                        TEX_SLOTS.DETAIL, texture_data)
-                if len(shader_textures) > 2:
-                    texture_data = getattr(shader_textures[2], 'texture_data')
-                    is_used = getattr(shader_textures[2], 'is_used')
-                    if texture_data and is_used:
-                        source = getattr(texture_data, 'source', None)
-                        if source:
-                            file_name = getattr(source, 'file_name', None)
-                            if file_name:
-                                if 'CompleteMap' not in str(file_name):
-                                    NifLog.warn(' 2 linking DETAIL slot')
-                                    nodes_wrapper.create_and_link(
-                                        TEX_SLOTS.DETAIL, texture_data)
+            try:
+                NifLog.warn(
+                    f"Tried importing a texture, but slots are empty, so trying to reach shader_textures")
+                # NifLog.warn(n_texture_desc)
+                shader_textures = getattr(n_texture_desc, 'shader_textures', None)
+                if shader_textures:
+                    if len(shader_textures) > 0:
+                        if hasattr(shader_textures[0], 'map'):
+                            map = getattr(shader_textures[0], 'map')
+                            if hasattr(map, 'source'):
+                                source = getattr(map, 'source')
+                                if hasattr(source, 'file_name'):
+                                    file_name = getattr(source, 'file_name')
+                                    if 'CompleteMap' not in str(file_name):
+                                        NifLog.warn('linking base slot')
+                                        nodes_wrapper.create_and_link(
+                                            TEX_SLOTS.BASE, source)
+                    if len(shader_textures) > 1:
+                        if hasattr(shader_textures[1], 'map'):
+                            map = getattr(shader_textures[1], 'map')
+                            if hasattr(map, 'source'):
+                                source = getattr(map, 'source')
+                                if hasattr(source, 'file_name'):
+                                    file_name = getattr(source, 'file_name')
+                                    if 'CompleteMap' not in str(file_name):
+                                        NifLog.warn(' 1 linking DETAIL slot')
+                                        nodes_wrapper.create_and_link(
+                                            TEX_SLOTS.DETAIL, source)
+                    if len(shader_textures) > 2:
+                        if hasattr(shader_textures[2], 'map'):
+                            map = getattr(shader_textures[2], 'map')
+                            if hasattr(map, 'source'):
+                                source = getattr(map, 'source')
+                                if hasattr(source, 'file_name'):
+                                    file_name = getattr(source, 'file_name')
+                                    if 'CompleteMap' not in str(file_name):
+                                        NifLog.warn(' 1 linking DETAIL slot')
+                                        nodes_wrapper.create_and_link(
+                                            TEX_SLOTS.DETAIL, source)
+            except Exception as e:
+                NifLog.warn(f"Failed to import texture: {e}")
